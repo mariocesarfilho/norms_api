@@ -10,7 +10,12 @@ class NormBase(BaseModel):
 class NormCreate(NormBase):
     pass
 
-class NormResponse(NormBase):
+class NormData(NormBase):
     id: int
     class Config:
         from_attributes = True
+
+class NormResponse(BaseModel):
+    success: bool
+    message: str
+    data: NormData

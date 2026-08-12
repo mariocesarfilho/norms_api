@@ -1,7 +1,5 @@
 from sqlalchemy import String, Integer, Column, Text
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
+from app.infra.database import Base
 
 class Norm(Base):
     __tablename__ = 'norms'

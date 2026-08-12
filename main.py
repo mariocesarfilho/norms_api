@@ -1,8 +1,19 @@
 from fastapi import FastAPI
 import app.models
-from app.db.database import engine
+from app.infra.database import engine
+from app.core.exception_handlers import database_exception_handler
+from sqlalchemy.exc import SQLAlchemyError
 
-# Cria as tabelas do BD caso não existam
-models.Base.metadata.create_all(bind=engine)
+from app.api.routes.norms_router import router
 
 app = FastAPI()
+
+app.add_exception_handler(
+    SQLAlchemyError,
+    database_exception_handler
+)
+
+app.include_router(
+    router,
+    prefix="/api/v1",
+)

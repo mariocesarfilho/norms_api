@@ -1,14 +1,17 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-from app.models.norms import Norm
+from app.models.norms_model import Norm
 
 class NormRepository:
-
     @staticmethod
-    async def find_all(db: AsyncSession, norm: Norm) -> list[Norm]:
-        query = select(Norm)
+    def create(db: Session, norm: Norm) -> Norm:
+        try:
+            db.add(norm)
+            db.commit()
+            db.refresh(norm)
 
-        result = await db.execute(query)
-
-        return result.scalars().all()
+            return norm
+        except SQLAlchemyError:
+            db.rollback()
+            raise
