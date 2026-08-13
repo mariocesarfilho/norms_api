@@ -2,7 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.models.norms_model import Norm
+from app.models.norm_model import Norm
 
 class NormRepository:
     @staticmethod

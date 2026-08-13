@@ -10,3 +10,4 @@ class Norm(Base):
     agency_unit = Column(String, nullable=False)
     publication = Column(String, nullable=False)
     summary = Column(Text, nullable=False)
+
