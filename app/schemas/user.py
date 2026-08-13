@@ -1,18 +1,11 @@
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
-    emal: str
-    password_hash: str
-
-class UserCreate(UserBase):
-    pass
-
-class UserData(BaseModel):
-    id: int
-    class Config:
-        from_attributes = True
+class UserCreate(BaseModel):
+    email: str
+    password: str
 
 class UserResponse(BaseModel):
-    success: bool
-    message: str
-    data: UserData
+    id: int
+    email: str
+    class Config:
+        from_attributes = True

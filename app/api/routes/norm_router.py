@@ -2,22 +2,38 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.infra.database import get_db
-from app.schemas.norm import NormCreate, NormResponse, NormListResponse, NormUpdate, NormDeleteResponse
+from app.schemas.norm import (
+    NormCreate,
+    NormDeleteResponse,
+    NormListResponse,
+    NormResponse,
+    NormUpdate,
+)
 from app.services.norm_service import NormService
+from app.api.dependencies.auth import get_current_user
+from app.models.user_model import User
 
 router = APIRouter(
     prefix="/norms",
-    tags=["Norms"]
+    tags=["Norms"],
 )
 
-@router.post("/", response_model=NormResponse, status_code=status.HTTP_201_CREATED)
-def create_norm(data: NormCreate, db: Session = Depends(get_db)):
+@router.post(
+    "/",
+    response_model=NormResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_norm(
+    data: NormCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
 
     norm = NormService.create(db, data)
     return {
         "success": True,
         "message": "Criado Norma com sucesso!",
-        "data": norm
+        "data": norm,
     }
 
 @router.get("/{norm_id}", response_model=NormResponse)
@@ -30,6 +46,7 @@ def get_norm(norm_id: int, db: Session = Depends(get_db)):
         "data": norm,
     }
 
+
 @router.get("/", response_model=NormListResponse)
 def get_all_norms(db: Session = Depends(get_db)):
     norms = NormService.get_all(db)
@@ -40,8 +57,13 @@ def get_all_norms(db: Session = Depends(get_db)):
         "data": norms,
     }
 
-@router.patch ("/{norm_id}", response_model=NormUpdate)
-def update_norm(norm_id: int, data: NormUpdate, db: Session = Depends(get_db)):
+@router.patch("/{norm_id}", response_model=NormUpdate)
+def update_norm(
+    norm_id: int,
+    data: NormUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     norm = NormService.update(db, norm_id, data)
 
     return {
@@ -51,10 +73,14 @@ def update_norm(norm_id: int, data: NormUpdate, db: Session = Depends(get_db)):
     }
 
 @router.delete("/{norm_id}", response_model=NormDeleteResponse)
-def delete_norm(norm_id: int, db: Session = Depends(get_db)):
+def delete_norm(
+    norm_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     NormService.delete(db, norm_id)
 
-    return{
+    return {
         "success": True,
         "message": "Norma deletada com sucesso!",
     }
