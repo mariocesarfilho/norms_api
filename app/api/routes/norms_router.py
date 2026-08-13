@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.infra.database import get_db
-from app.schemas.norm import NormCreate, NormResponse, NormListResponse, NormUpdate
+from app.schemas.norm import NormCreate, NormResponse, NormListResponse, NormUpdate, NormDeleteResponse
 from app.services.norm_service import NormService
 
 router = APIRouter(
@@ -48,4 +48,13 @@ def update_norm(norm_id: int, data: NormUpdate, db: Session = Depends(get_db)):
         "success": True,
         "message": "Norma atualizada com sucesso!",
         "data": norm,
+    }
+
+@router.delete("/{norm_id}", response_model=NormDeleteResponse)
+def delete_norm(norm_id: int, db: Session = Depends(get_db)):
+    NormService.delete(db, norm_id)
+
+    return{
+        "success": True,
+        "message": "Norma deletada com sucesso!",
     }

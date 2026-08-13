@@ -41,3 +41,12 @@ class NormRepository:
         except SQLAlchemyError:
             db.rollback()
             raise
+
+    @staticmethod
+    def delete(db: Session, norm: Norm) -> None:
+        try:
+            db.delete(norm)
+            db.commit()
+        except SQLAlchemyError:
+            db.rollback()
+            raise

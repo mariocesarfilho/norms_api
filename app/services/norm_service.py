@@ -53,3 +53,15 @@ class NormService:
             setattr(norm, field, value)
 
         return NormRepository.update(db, norm)
+
+    @staticmethod
+    def delete(db: Session, norm_id: int) -> None:
+        norm = NormService.get_by_id(db, norm_id)
+
+        if norm is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Norma não encontrada",
+        )
+
+        NormRepository.delete(db, norm)

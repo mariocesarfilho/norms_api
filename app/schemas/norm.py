@@ -31,3 +31,7 @@ class NormUpdate(BaseModel):
     agency_unit: str | None = None
     publication: str | None = None
     summary: str | None = None
+
+class NormDeleteResponse(BaseModel):
+    success: bool
+    message: str
