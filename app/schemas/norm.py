@@ -19,3 +19,8 @@ class NormResponse(BaseModel):
     success: bool
     message: str
     data: NormData
+
+class NormListResponse(BaseModel):
+    success: bool
+    message: str
+    data: list[NormData]

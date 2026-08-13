@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.infra.database import get_db
-from app.schemas.norm import NormCreate, NormResponse
+from app.schemas.norm import NormCreate, NormResponse, NormListResponse
 from app.services.norm_service import NormService
 
 router = APIRouter(
@@ -18,4 +18,24 @@ def create_norm(data: NormCreate, db: Session = Depends(get_db)):
         "success": True,
         "message": "Criado Norma com sucesso!",
         "data": norm
+    }
+
+@router.get("/{norm_id}", response_model=NormResponse)
+def get_norm(norm_id: int, db: Session = Depends(get_db)):
+    norm = NormService.get_by_id(db, norm_id)
+
+    return {
+        "success": True,
+        "message": "Norma encontrada com sucesso!",
+        "data": norm,
+    }
+
+@router.get("/", response_model=NormListResponse)
+def get_all_norms(db: Session = Depends(get_db)):
+    norms = NormService.get_all(db)
+
+    return {
+        "success": True,
+        "message": "Normas encontradas com sucesso!",
+        "data": norms,
     }

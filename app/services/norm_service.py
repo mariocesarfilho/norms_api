@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 
 from app.models.norms_model import Norm
 from app.repositories.norm_repository import NormRepository
@@ -16,3 +17,19 @@ class NormService:
         )
 
         return NormRepository.create(db, norm)
+
+    @staticmethod
+    def get_by_id(db: Session, norm_id: int) -> Norm:
+        norm = NormRepository.get_by_id(db, norm_id)
+
+        if norm is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Norma não encontrada"
+            )
+
+        return norm
+
+    @staticmethod
+    def get_all(db: Session) -> list[Norm]:
+        return NormRepository.get_all(db)
