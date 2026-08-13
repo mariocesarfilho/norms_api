@@ -30,3 +30,14 @@ class NormRepository:
         result = db.execute(select(Norm))
 
         return list(result.scalars().all())
+
+    @staticmethod
+    def update(db: Session, norm: Norm) -> Norm:
+        try:
+            db.commit()
+            db.refresh(norm)
+
+            return norm
+        except SQLAlchemyError:
+            db.rollback()
+            raise

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.infra.database import get_db
-from app.schemas.norm import NormCreate, NormResponse, NormListResponse
+from app.schemas.norm import NormCreate, NormResponse, NormListResponse, NormUpdate
 from app.services.norm_service import NormService
 
 router = APIRouter(
@@ -38,4 +38,14 @@ def get_all_norms(db: Session = Depends(get_db)):
         "success": True,
         "message": "Normas encontradas com sucesso!",
         "data": norms,
+    }
+
+@router.patch ("/{norm_id}", response_model=NormUpdate)
+def update_norm(norm_id: int, data: NormUpdate, db: Session = Depends(get_db)):
+    norm = NormService.update(db, norm_id, data)
+
+    return {
+        "success": True,
+        "message": "Norma atualizada com sucesso!",
+        "data": norm,
     }

@@ -24,3 +24,10 @@ class NormListResponse(BaseModel):
     success: bool
     message: str
     data: list[NormData]
+
+class NormUpdate(BaseModel):
+    act_type: str | None = None
+    act_number: int | None = None
+    agency_unit: str | None = None
+    publication: str | None = None
+    summary: str | None = None

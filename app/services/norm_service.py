@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 
 from app.models.norms_model import Norm
 from app.repositories.norm_repository import NormRepository
-from app.schemas.norm import NormCreate
+from app.schemas.norm import NormCreate, NormUpdate
 
 class NormService:
     @staticmethod
@@ -33,3 +33,23 @@ class NormService:
     @staticmethod
     def get_all(db: Session) -> list[Norm]:
         return NormRepository.get_all(db)
+
+    @staticmethod
+    def update(db: Session, norm_id: int, data: NormUpdate) -> Norm:
+        norm = NormService.get_by_id(db, norm_id)
+
+        if norm is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Norma não encontrada",
+            )
+
+        update_data = data.model_dump(
+            exclude_unset=True,
+            exclude_none=True
+        )
+
+        for field, value in update_data.items():
+            setattr(norm, field, value)
+
+        return NormRepository.update(db, norm)
