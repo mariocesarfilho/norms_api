@@ -6,6 +6,7 @@ from app.core.config import settings
 from bs4 import BeautifulSoup
 
 def fetch_html() -> bytes:
+    """Baixa a página da Receita e normaliza falhas externas da integração."""
     request = Request(
         settings.federal_url,
         headers={
@@ -32,6 +33,7 @@ def fetch_html() -> bytes:
         ) from error
 
 def parse_norms(html: bytes) -> list[dict]:
+    """Extrai normas da tabela pública e sinaliza mudanças incompatíveis no HTML."""
     soup = BeautifulSoup(
         html,
         "html.parser"
@@ -81,6 +83,7 @@ def scrape_norms() -> list[dict]:
     return parse_norms(html)
 
 def extract_source_id(row) -> int | None:
+    """Extrai do link oficial o ID usado para reconhecer normas já sincronizadas."""
     link = row.find("a", href=True)
 
     if link is None:
@@ -99,8 +102,10 @@ def extract_source_id(row) -> int | None:
     return int(match.group(1))
 
 class FederalRevenueUnavailableError(Exception):
+    """Representa falhas HTTP, de rede ou de timeout ao consultar a Receita."""
     pass
 
 
 class FederalRevenueInvalidResponseError(Exception):
+    """Representa um HTML incompatível com a estrutura esperada pelo scraper."""
     pass

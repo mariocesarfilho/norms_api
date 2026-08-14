@@ -15,6 +15,7 @@ def get_current_user(
         credentials: HTTPAuthorizationCredentials = Depends(security),
         db: Session = Depends(get_db)
 ) -> User:
+    """Resolve no banco o usuário indicado pelo claim `sub` do token bearer."""
     token = credentials.credentials
 
     try:

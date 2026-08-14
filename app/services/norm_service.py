@@ -45,6 +45,8 @@ class NormService:
                 detail="Norma não encontrada",
             )
 
+        # Campos ausentes ou explicitamente nulos preservam o valor armazenado
+        # durante uma atualização parcial.
         update_data = data.model_dump(
             exclude_unset=True,
             exclude_none=True
@@ -71,6 +73,10 @@ class NormService:
     def sync_from_scraper(
         db: Session
     ) -> dict:
+        """Sincroniza normas sem repetir `source_id` já persistidos.
+
+        Itens sem identificador externo também são contabilizados como ignorados.
+        """
         scraped_norms = scrape_norms()
 
         created = 0

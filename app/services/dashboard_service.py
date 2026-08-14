@@ -13,6 +13,7 @@ class DashboardService:
         publication_date: datetime | None = None,
         search: str | None = None,
     ) -> dict:
+        """Aplica filtros antes das agregações para manter todo o dashboard no mesmo recorte."""
 
         publication = None
 

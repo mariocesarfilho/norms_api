@@ -5,6 +5,8 @@ class Norm(Base):
     __tablename__ = 'norms'
 
     id = Column(Integer, primary_key=True, index=True)
+    # Identificador fornecido pela Receita; fica nulo em cadastros manuais e é
+    # único para impedir que a mesma norma seja importada novamente.
     source_id = Column(Integer, unique=True, nullable=True, index=True)
     act_type = Column(String, nullable=False)
     act_number = Column(Integer, nullable=False)

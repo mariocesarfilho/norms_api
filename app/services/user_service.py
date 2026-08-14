@@ -48,6 +48,8 @@ class UserService:
             db, email
         )
 
+        # A mesma resposta para conta inexistente e senha incorreta evita expor
+        # quais e-mails estão cadastrados.
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

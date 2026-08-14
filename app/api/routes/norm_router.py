@@ -63,7 +63,7 @@ def get_all_norms(db: Session = Depends(get_db)):
         "data": norms,
     }
 
-@router.patch("/{norm_id}", response_model=NormUpdate)
+@router.patch("/{norm_id}", response_model=NormResponse)
 def update_norm(
     norm_id: int,
     data: NormUpdate,
@@ -92,6 +92,8 @@ def sync_norms(db: Session = Depends(get_db)):
             "data": result,
         }
 
+    # Indisponibilidade da Receita vira 503; uma resposta recebida com estrutura
+    # inválida vira 502, pois o problema está no conteúdo do serviço externo.
     except FederalRevenueUnavailableError as error:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

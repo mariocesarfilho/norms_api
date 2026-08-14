@@ -69,6 +69,10 @@ class NormRepository:
         publication: str | None = None,
         search: str | None = None
     ) -> list[Norm]:
+        """Combina filtros opcionais de publicação exata e busca parcial.
+
+        A busca inclui tipo, órgão, resumo e o número do ato convertido em texto.
+        """
         statement = select(Norm)
 
         if publication is not None:

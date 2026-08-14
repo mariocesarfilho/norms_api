@@ -7,6 +7,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.infra.database import Base
+# Estes imports registram os models no metadata usado pelo autogenerate.
 from app.models.norm_model import Norm
 from app.models.user_model import User
 
@@ -14,6 +15,7 @@ from app.models.user_model import User
 # access to the values within the .ini file in use.
 config = context.config
 
+# O Alembic usa a mesma URL de banco configurada para a aplicação em cada ambiente.
 config.set_main_option(
     "sqlalchemy.url",
     settings.database_url,

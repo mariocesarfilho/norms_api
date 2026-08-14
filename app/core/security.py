@@ -9,6 +9,7 @@ password_hash = PasswordHash.recommended()
 
 
 def encode(subject: str) -> str:
+    """Emite um JWT com o ID do usuário em `sub` e expiração configurável."""
     expires_at = datetime.now(timezone.utc) + timedelta(
         minutes=settings.jwt_access_token_expire
     )
@@ -26,6 +27,7 @@ def encode(subject: str) -> str:
 
 
 def decode(token: str) -> dict:
+    """Valida assinatura e expiração do JWT antes de devolver os claims."""
     return jwt.decode(
         token,
         settings.jwt_secret_key,
