@@ -1,14 +1,13 @@
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 import re
+from app.core.config import settings
 
 from bs4 import BeautifulSoup
 
-URL = "http://normas.receita.fazenda.gov.br/sijut2consulta/consulta.action"
-
 def fetch_html() -> bytes:
     request = Request(
-        URL,
+        settings.federal_url,
         headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/58.0.3029.110"
         })
