@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, String, cast, or_, select
 
 from app.models.norm_model import Norm
 
@@ -62,3 +62,32 @@ class NormRepository:
         )
 
         return result.scalar_one_or_none()
+
+    @staticmethod
+    def get_dashboard_data(
+        db: Session,
+        publication: str | None = None,
+        search: str | None = None
+    ) -> list[Norm]:
+        statement = select(Norm)
+
+        if publication is not None:
+            statement = statement.where(
+                Norm.publication == publication
+            )
+
+        if search:
+            search_term = f"%{search.strip()}%"
+
+            statement = statement.where(
+                or_(
+                    Norm.act_type.ilike(search_term),
+                    Norm.agency_unit.ilike(search_term),
+                    Norm.summary.ilike(search_term),
+                    cast(Norm.act_number, String).ilike(search_term),
+                )
+            )
+
+        result = db.execute(statement)
+
+        return list(result.scalars().all())
