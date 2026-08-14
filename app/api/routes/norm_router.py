@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.scrapers.federal_revenue_scraper import (
+    FederalRevenueUnavailableError,
+    FederalRevenueInvalidResponseError,
+)
 from sqlalchemy.orm import Session
 
 from app.infra.database import get_db
@@ -78,14 +83,26 @@ def update_norm(
              dependencies=[Depends(get_current_user)],
 )
 def sync_norms(db: Session = Depends(get_db)):
-    result = NormService.sync_from_scraper(db)
+    try:
+        result = NormService.sync_from_scraper(db)
 
-    return {
-        "success": True,
-        "message": "Normas sincronizadas com sucesso!",
-        "data": result,
-    }
+        return {
+            "success": True,
+            "message": "Sincronização concluída com sucesso!",
+            "data": result,
+        }
 
+    except FederalRevenueUnavailableError as error:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(error),
+        ) from error
+    except FederalRevenueInvalidResponseError as error:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=str(error),
+        ) from error
+    
 @router.delete("/{norm_id}", response_model=NormDeleteResponse)
 def delete_norm(
     norm_id: int,

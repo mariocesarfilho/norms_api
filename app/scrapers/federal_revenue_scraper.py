@@ -1,5 +1,6 @@
-import re
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+import re
 
 from bs4 import BeautifulSoup
 
@@ -12,8 +13,24 @@ def fetch_html() -> bytes:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/58.0.3029.110"
         })
 
-    with urlopen(request, timeout=30) as response:
-        return response.read()
+    try:
+        with urlopen(request, timeout=30) as response:
+             return response.read()
+        
+    except HTTPError as error:
+        raise FederalRevenueUnavailableError(
+            f"Receita Federal respondeu com status {error.code}"
+        ) from error
+
+    except URLError as error:
+        raise FederalRevenueUnavailableError(
+            "Não foi possível conectar ao site da Receita Federal"
+        ) from error
+
+    except TimeoutError as error:
+        raise FederalRevenueUnavailableError(
+            "Tempo limite excedido ao acessar a Receita Federal"
+        ) from error
 
 def parse_norms(html: bytes) -> list[dict]:
     soup = BeautifulSoup(
@@ -27,7 +44,9 @@ def parse_norms(html: bytes) -> list[dict]:
     )
 
     if table is None:
-        return []
+        raise FederalRevenueInvalidResponseError(
+            "A estrutura da página foi alterada"
+        )
 
     rows = table.find_all(
         "tr",
@@ -79,3 +98,10 @@ def extract_source_id(row) -> int | None:
         return None
 
     return int(match.group(1))
+
+class FederalRevenueUnavailableError(Exception):
+    pass
+
+
+class FederalRevenueInvalidResponseError(Exception):
+    pass
