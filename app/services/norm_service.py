@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from app.models.norm_model import Norm
 from app.repositories.norm_repository import NormRepository
 from app.schemas.norm import NormCreate, NormUpdate
+from app.scrapers.federal_revenue_scraper import scrape_norms
 
 class NormService:
     @staticmethod
@@ -65,3 +66,46 @@ class NormService:
         )
 
         NormRepository.delete(db, norm)
+
+    @staticmethod
+    def sync_from_scraper(
+        db: Session
+    ) -> dict:
+        scraped_norms = scrape_norms()
+
+        created = 0
+        skipped = 0
+
+        for data in scraped_norms:
+            source_id = data["source_id"]
+
+            if source_id is None:
+                skipped += 1
+                continue
+
+            existing_norm = NormRepository.get_by_source_id(
+                db, 
+                source_id
+            )
+
+            if existing_norm is not None:
+                skipped += 1
+                continue
+
+            norm = Norm(
+                source_id=source_id,
+                act_type=data["act_type"],
+                act_number=data["act_number"],
+                agency_unit=data["agency_unit"],
+                publication=data["publication"],
+                summary=data["summary"]
+            )
+
+            NormRepository.create(db, norm)
+            created += 1
+
+        return {
+            "found": len(scraped_norms),
+            "created": created,
+            "skipped": skipped
+        }

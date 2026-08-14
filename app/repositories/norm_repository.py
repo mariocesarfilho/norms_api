@@ -50,3 +50,15 @@ class NormRepository:
         except SQLAlchemyError:
             db.rollback()
             raise
+
+    @staticmethod
+    def get_by_source_id(
+        db: Session, source_id: int
+    ) -> Norm | None:
+        result = db.execute(
+            select(Norm).where(
+                Norm.source_id == source_id
+                )
+        )
+
+        return result.scalar_one_or_none()

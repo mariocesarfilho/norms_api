@@ -35,3 +35,13 @@ class NormUpdate(BaseModel):
 class NormDeleteResponse(BaseModel):
     success: bool
     message: str
+
+class NormSyncData(BaseModel):
+    found: int
+    created: int
+    skipped: int
+
+class NormSyncResponse(BaseModel):
+    success: bool
+    message: str
+    data: NormSyncData

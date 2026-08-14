@@ -8,6 +8,7 @@ from app.schemas.norm import (
     NormListResponse,
     NormResponse,
     NormUpdate,
+    NormSyncResponse
 )
 from app.services.norm_service import NormService
 from app.api.dependencies.auth import get_current_user
@@ -70,6 +71,19 @@ def update_norm(
         "success": True,
         "message": "Norma atualizada com sucesso!",
         "data": norm,
+    }
+
+@router.post("/sync",
+             response_model=NormSyncResponse,
+             dependencies=[Depends(get_current_user)],
+)
+def sync_norms(db: Session = Depends(get_db)):
+    result = NormService.sync_from_scraper(db)
+
+    return {
+        "success": True,
+        "message": "Normas sincronizadas com sucesso!",
+        "data": result,
     }
 
 @router.delete("/{norm_id}", response_model=NormDeleteResponse)
